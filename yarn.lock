@@ -8297,7 +8297,7 @@
   dependencies:
     "aproba" "^1.1.1"
 
-"rxjs@^6.1.0":
+"rxjs@^6.1.0", "rxjs@^6.3.3":
   "integrity" "sha512-JTWmoY9tWCs7zvIk/CvRjhjGaOd+OVBM987mxFo+OW66cGpdKjZcpmc74ES1sB//7Kl/PAe8+wEakuhG4pcgOw=="
   "resolved" "https://registry.npmjs.org/rxjs/-/rxjs-6.3.3.tgz"
   "version" "6.3.3"
