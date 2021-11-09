@@ -61,6 +61,7 @@ class Shelves extends Component {
     render() {
         const shelves = <div>{this.state.shelvesByOrder.map(shelf => (
             <Shelf key={shelf} shelf={this.state.shelves[shelf]}/>))}</div>
+
         const loading = <div className="loader-wrapper">
             <div style={{
                 background: `url(${loaderImage}) center center no-repeat`,
@@ -71,7 +72,7 @@ class Shelves extends Component {
         </div>
         return (
             <div className="list-books-content">
-                {((this.state.loaded && (shelves)) || loading)}
+                {(this.state.loaded && (shelves)) || loading}
             </div>
         )
     }
