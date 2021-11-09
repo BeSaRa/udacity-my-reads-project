@@ -8,7 +8,7 @@ class Shelf extends Component {
             <h2 className="bookshelf-title">{title} - ({books.length})</h2>
             <div className="bookshelf-books">
                 <ol className="books-grid">
-                    {books.map(book => <Book book={book} key={book.title}/>)}
+                    {books.map(book => <Book book={book} key={book.id}/>)}
                 </ol>
             </div>
         </div>;
