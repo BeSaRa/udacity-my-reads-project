@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import Shelf from "./Shelf";
 import * as BookAPI from './../BooksAPI';
-import loaderImage from '../images/Loader.gif';
+import Loader from "./Loader";
 
 class Shelves extends Component {
     state = {
@@ -62,17 +62,9 @@ class Shelves extends Component {
         const shelves = <div>{this.state.shelvesByOrder.map(shelf => (
             <Shelf key={shelf} shelf={this.state.shelves[shelf]}/>))}</div>
 
-        const loading = <div className="loader-wrapper">
-            <div style={{
-                background: `url(${loaderImage}) center center no-repeat`,
-                width: 250,
-                height: 150
-            }}/>
-            <span className="loading-word">Loading...</span>
-        </div>
         return (
             <div className="list-books-content">
-                {(this.state.loaded && (shelves)) || loading}
+                {(this.state.loaded && (shelves)) || <Loader/>}
             </div>
         )
     }
