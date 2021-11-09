@@ -6,6 +6,7 @@ import {debounceTime, distinctUntilChanged, map, switchMap, takeUntil} from "rxj
 import * as BookAPI from "../../BooksAPI"
 import Book from "../../components/Book";
 import Loader from "../../components/Loader";
+import history from "../../history";
 
 class SearchPage extends Component {
     state = {
@@ -22,7 +23,7 @@ class SearchPage extends Component {
     constructor(props) {
         super(props);
         // to use it later if user refreshed the page with query string to call the API again with the same term
-        this.searchParams = new URLSearchParams(this.props.location.search);
+        this.searchParams = new URLSearchParams(history.location.search);
     }
 
     /**
@@ -41,6 +42,7 @@ class SearchPage extends Component {
         // emit to stop listening to term changes
         this.destroy$.next();
         this.destroy$.complete();
+        this.destroy$.unsubscribe();
     }
 
     /**
@@ -95,8 +97,8 @@ class SearchPage extends Component {
      */
     handleChanges = (value) => {
         this.setState({term: value})
-        this.props.history.push({
-            pathname: this.props.location.pathname,
+        history.push({
+            pathname: history.location.pathname,
             search: value ? '?' + this.queryKey + '=' + value : ''
         })
         this.term$.next(value); // emit term value to use it later for calling API
@@ -104,9 +106,14 @@ class SearchPage extends Component {
 
     render() {
         const list = <ol className="books-grid">
-            {this.state.books.map(book => <Book book={book} key={book.id}/>)}
+            {this.state.books.map(book => <Book booksByIds={this.props.booksByIds}
+                                                moveBookCallback={this.props.moveBookToShelf}
+                                                book={book}
+                                                key={book.id}/>)}
         </ol>;
-        const message = <div>there is no result for your term "<mark>{this.state.term}</mark>"</div>;
+        const message = <div>there is no result for your term "
+            <mark>{this.state.term}</mark>
+            "</div>;
 
         const displayRightUI = () => {
             return this.state.displayLoader ?
@@ -119,6 +126,7 @@ class SearchPage extends Component {
                     <Link className="close-search" to="/">Close</Link>
                     <div className="search-books-input-wrapper">
                         <input type="text"
+                               autoFocus={true}
                                value={this.state.term}
                                onChange={(event) => this.handleChanges(event.target.value)}
                                placeholder="Search by title or author"/>
