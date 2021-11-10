@@ -9,18 +9,11 @@ import {catchError, exhaustMap} from "rxjs/operators";
 
 class BooksApp extends Component {
     state = this.createInitialState();
-    destroy$ = new Subject();
     reload$ = new Subject();
 
     componentDidMount() {
         this.listenToReload();
         this.reload$.next(null);
-    }
-
-    componentWillUnmount() {
-        this.destroy$.next(null);
-        this.destroy$.complete();
-        this.destroy$.unsubscribe();
     }
 
     /**
@@ -86,6 +79,7 @@ class BooksApp extends Component {
         this.setState((prevState) => {
             const books = prevState.shelves[shelf].books.concat(book);
             return {
+                booksByIds: {...prevState.booksByIds, [book.id]: book},
                 shelves: {
                     ...prevState.shelves,
                     [shelf]: {
@@ -115,14 +109,28 @@ class BooksApp extends Component {
         BookAPI
             .update(book, shelf)
             .then(shelvesWithBooksIds => {
-                !book.shelf && this.setState((prev) => {
-                    book.shelf = shelf;
-                    return {booksByIds: {...prev.booksByIds, [book.id]: book}}
-                })
+                book.shelf = shelf; // assign current shelf to the book
+                book.shelf === 'none' ? this.removeBookFromBooksByIds(book) : this.addBookToShelf(book, shelf);
+                // update shelves based on the data that came from API
                 this.updateShelves(shelvesWithBooksIds);
             })
     }
-
+    /**
+     * @description remove book from booksByIds
+     * @param book
+     */
+    removeBookFromBooksByIds = (book) => {
+        this.setState((prevState) => {
+            delete prevState.booksByIds[book];
+            return {
+                booksByIds: {...prevState.booksByIds}
+            }
+        })
+    }
+    /**
+     * @description update the current Shelves state
+     * @param shelvesWithBooksIds
+     */
     updateShelves = (shelvesWithBooksIds) => {
         Object.keys(shelvesWithBooksIds).forEach(shelf => {
             this.setState((preState) => {
@@ -143,7 +151,8 @@ class BooksApp extends Component {
     render() {
         return (
             <div className="app">
-                <Route path="/search" render={() => <SearchPage booksByIds={this.state.booksByIds}  moveBookToShelf={this.moveBookToShelf}/>}/>
+                <Route path="/search" render={() => <SearchPage booksByIds={this.state.booksByIds}
+                                                                moveBookToShelf={this.moveBookToShelf}/>}/>
                 <Route path="/" exact
                        render={() => <MainPage reload={() => this.reload$.next(null)}
                                                shelvesByOrder={this.state.shelvesByOrder}
