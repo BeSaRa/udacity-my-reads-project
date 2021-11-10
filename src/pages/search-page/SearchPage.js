@@ -105,20 +105,21 @@ class SearchPage extends Component {
     }
 
     render() {
-        const list = <ol className="books-grid">
-            {this.state.books.map(book => <Book booksByIds={this.props.booksByIds}
-                                                moveBookCallback={this.props.moveBookToShelf}
-                                                book={book}
-                                                key={book.id}/>)}
-        </ol>;
-        const message = <div>there is no result for your term "
-            <mark>{this.state.term}</mark>
-            "</div>;
+        const {displayLoader, term, hasError, books} = this.state;
 
-        const displayRightUI = () => {
-            return this.state.displayLoader ?
-                <Loader/> : (this.state.hasError && this.state.term.length) ? message : list;
-        }
+        const list = (<div className="text-center">
+            <span>Number of search results (<mark>{books.length}</mark>)</span>
+            <ol className="books-grid">
+                {books.map(book => <Book booksByIds={this.props.booksByIds}
+                                         moveBookCallback={this.props.moveBookToShelf}
+                                         book={book}
+                                         key={book.id}/>)}
+            </ol>
+        </div>);
+
+        const message = (<div className="text-center">there is no result for your term "
+            <mark>{term}</mark>
+            "</div>);
 
         return (
             <div className="search-books">
@@ -133,7 +134,9 @@ class SearchPage extends Component {
                     </div>
                 </div>
                 <div className="search-books-results">
-                    {displayRightUI()}
+                    {displayLoader && <Loader/>}
+                    {hasError && !!term.length && message}
+                    {!!books.length && list}
                 </div>
             </div>
         )
