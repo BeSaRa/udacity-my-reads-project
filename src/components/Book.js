@@ -2,8 +2,7 @@ import React from "react";
 import noImageAvailable from "../images/no-cover.jpg";
 import BookShelfChanger from "./BookShelfChanger";
 
-function Book(props) {
-    const {book, moveBookCallback , booksByIds} = props;
+function Book({book, moveBookCallback, booksByIds}) {
     // to handle books that has no cover
     book.imageLinks = book.imageLinks || {
         smallThumbnail: noImageAvailable
